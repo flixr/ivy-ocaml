@@ -1,0 +1,13 @@
+Source: ivy-ocaml
+Section: net
+Priority: optional
+Maintainer: Pascal Brisset (Hecto) <pascal.brisset@enac.fr>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.1
+
+Package: ivy-ocaml
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends} ocaml-nox (= 3.08.2-1), ivy-c
+Description: Ocaml binding for the Ivy software bus
+ This package provides the bindings for the Ivy software bus. Standalone
+ linking and with the glib mainloop are provided.
