@@ -2,9 +2,10 @@
 #include <string.h>
 #include <stdio.h>
 #include <getopt.h>
-#include <ivy.h>
-#include <ivyloop.h>
-#include <timer.h>
+#include <Ivy/ivy.h>
+#include <Ivy/ivyloop.h>
+#include <Ivy/timer.h>
+#include <Ivy/version.h>
 #include <caml/mlvalues.h>
 #include <caml/fail.h>
 #include <caml/callback.h>
@@ -13,14 +14,18 @@
 
 value ivy_mainLoop(value unit)
 {
-  IvyMainLoop (0);
+#if IVYMINOR_VERSION == 8
+  IvyMainLoop (NULL,NULL);
+#else
+  IvyMainLoop ();
+#endif
   return Val_unit;
 }
 
 void timer_cb(TimerId id, void *data, unsigned long delta)
 {
   value closure = *(value*)data;
-  callback(closure, Val_int((int) id));
+  callback(closure, Val_long(id));
 }
 
 value ivy_timerRepeatafter(value nb_ticks,value delay, value closure_name)
@@ -33,8 +38,9 @@ value ivy_timerRepeatafter(value nb_ticks,value delay, value closure_name)
 /* Data associated to Channel callbacks is the couple of delete and
 read closures */
 
-void cb_delete_channel(void *delete_read);
-void cb_read_channel(Channel ch, HANDLE fd, void *closure);
+extern void cb_delete_channel(void *delete_read);
+extern void cb_read_channel(Channel ch, HANDLE fd, void *closure);
+extern void cb_write_channel(Channel ch, HANDLE fd, void *closure);
 
 
 value ivy_channelSetUp(value fd, value closure_name)
@@ -42,19 +48,23 @@ value ivy_channelSetUp(value fd, value closure_name)
   Channel c;
   value * closure = caml_named_value(String_val(closure_name));
 
-  c = IvyChannelSetUp((HANDLE)Int_val(fd), (void*)closure, cb_delete_channel, cb_read_channel);
+#if IVYMINOR_VERSION == 8
+  c = IvyChannelAdd((HANDLE)Int_val(fd), (void*)closure, cb_delete_channel, cb_read_channel);
+#else
+  c = IvyChannelAdd((HANDLE)Int_val(fd), (void*)closure, cb_delete_channel, cb_read_channel, cb_write_channel);
+#endif
   return Val_int(c);
 }
 
 value ivy_timerRemove(value t)
 {
-  TimerRemove((TimerId)Int_val(t));
+  TimerRemove((TimerId)Long_val(t));
   return Val_unit;
 }
 
 
 value ivy_channelClose(value ch)
 {
-  IvyChannelClose((Channel)Int_val(ch));
+  IvyChannelRemove((Channel)Long_val(ch));
   return Val_unit;
 }

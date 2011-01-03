@@ -5,6 +5,8 @@ OCAMLMLI = ocamlc -I ..
 OCAMLOPT = ocamlopt
 OCAMLDEP=ocamldep
 
+all: ivyprobe.out glibivyprobe.out
+
 ivyprobe.out : ivyprobe.cmo ivyivyprobe.cmo
 	$(OCAMLC) -custom -o $@ unix.cma ivy-ocaml.cma $^
 

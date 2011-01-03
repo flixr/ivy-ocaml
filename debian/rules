@@ -10,6 +10,7 @@
 #export DH_VERBOSE=1
 
 
+OCAMLABI := $(shell ocamlc -version)
 
 
 CFLAGS = -Wall -g
@@ -90,7 +91,7 @@ binary-arch: build install
 #	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
-	dh_gencontrol
+	dh_gencontrol -- -VF:OCamlABI="$(OCAMLABI)"
 	dh_md5sums
 	dh_builddeb
 
