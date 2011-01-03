@@ -15,4 +15,4 @@ Documentation:
  - The Ivy documentation (www.tls.cena.fr/products/ivy)
  - The .mli files (ivy.mli, ivyLoop.mli and glibIvy.mli)
 
-Maintainer: Pascal Brisset (pascal dot brisset at enac dot fr)
+Maintainer: Gautier Hattenberger (gautier dot hattenberger at enac dot fr)
