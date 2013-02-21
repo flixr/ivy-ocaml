@@ -56,8 +56,10 @@ ifeq ("$(UNAME)","Darwin")
 endif
 
 LIBS = ivy.cma ivy.cmxa glibivy.cma glibivy.cmxa
-# tkivy.cma tkivy.cmxa
-METAFILE = META.ivy
+TKLIBS = tkivy.cma tkivy.cmxa
+STATIC = libivy.a libglibivy.a ivy.a glibivy.a
+GLIBIVYCMI = glibIvy.cmi
+METAFILES = META.ivy META.glibivy
 
 all : $(LIBS)
 
@@ -68,7 +70,7 @@ ivy : ivy.cma ivy.cmxa
 glibivy : glibivy.cma glibivy.cmxa
 tkivy : tkivy.cma tkivy.cmxa
 
-INST_FILES = $(IVYCMI) $(IVYMLI) glibIvy.cmi $(LIBS) libivy.a libglibivy.a ivy.a glibivy.a
+INST_FILES = $(IVYCMI) $(IVYMLI) $(GLIBIVYCMI) $(LIBS) $(STATIC)
 # tkIvy.cmi  libtkivy.a  dlltkivy.so tkivy.a
 STUBLIBS = dllivy.so dllglibivy.so
 
@@ -78,12 +80,14 @@ install : $(LIBS)
 	mkdir -p $(DESTDIR)/`ocamlc -where`/stublibs
 	cp $(STUBLIBS) $(DESTDIR)/`ocamlc -where`/stublibs
 	mkdir -p $(DESTDIR)/`ocamlc -where`/METAS
-	cp $(METAFILE) $(DESTDIR)/`ocamlc -where`/METAS
+	cp $(METAFILES) $(DESTDIR)/`ocamlc -where`/METAS
 	mkdir -p $(DESTDIR)/`ocamlc -where`
-	$(foreach file,$(INST_FILES), cd $(DESTDIR)/`ocamlc -where`; ln -s ivy/$(file) $(subst .cm,-ocaml.cm,$(file));)
+	$(foreach file,$(LIBS), cd $(DESTDIR)/`ocamlc -where`; ln -s ivy/$(file) $(subst .cm,-ocaml.cm,$(file));)
+	$(foreach file,$(STATIC), cd $(DESTDIR)/`ocamlc -where`; ln -s ivy/$(file) $(subst .a,-ocaml.a,$(file));)
+	$(foreach file,$(IVYCMI) $(IVYMLI) $(GLIBIVYCMI), cd $(DESTDIR)/`ocamlc -where`; ln -s ivy/$(file) $(file);)
 
 desinstall :
-	cd `ocamlc -where`; rm -f $(INST_FILES); rm -f METAS/$(METAFILE)
+	cd `ocamlc -where`; rm -f $(INST_FILES); rm -f METAS/$(METAFILES)
 
 ivy.cma : $(IVYCMO) civy.o civyloop.o
 	$(OCAMLMKLIB) -o ivy $^ $(LIBRARYS)  -livy
