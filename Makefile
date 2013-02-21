@@ -61,10 +61,7 @@ METAFILE = META.ivy
 
 all : $(LIBS)
 
-DISTRO=`ocamlc -version`
-
 deb :
-	cp debian/changelog.$(DISTRO) debian/changelog
 	dpkg-buildpackage -rfakeroot
 
 ivy : ivy.cma ivy.cmxa
