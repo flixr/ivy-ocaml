@@ -55,24 +55,25 @@ ifeq ("$(UNAME)","Darwin")
   LIBRARYS = -L/opt/local/lib
 endif
 
-LIBS = ivy.cma ivy.cmxa glibivy.cma glibivy.cmxa
+LIBS = ivy-ocaml.cma glibivy-ocaml.cma
+XLIBS = ivy-ocaml.cmxa glibivy-ocaml.cmxa
 TKLIBS = tkivy.cma tkivy.cmxa
-STATIC = libivy.a libglibivy.a ivy.a glibivy.a
+STATIC = libivy-ocaml.a libglibivy-ocaml.a ivy-ocaml.a glibivy-ocaml.a
 GLIBIVYCMI = glibIvy.cmi
 METAFILES = META.ivy META.glibivy
 
-all : $(LIBS)
+all : $(LIBS) $(XLIBS)
 
 deb :
 	dpkg-buildpackage -rfakeroot
 
-ivy : ivy.cma ivy.cmxa
-glibivy : glibivy.cma glibivy.cmxa
-tkivy : tkivy.cma tkivy.cmxa
+ivy : ivy-ocaml.cma ivy-ocaml.cmxa
+glibivy : glibivy-ocaml.cma glibivy-ocaml.cma
+tkivy : $(TKLIBS)
 
-INST_FILES = $(IVYCMI) $(IVYMLI) $(GLIBIVYCMI) $(LIBS) $(STATIC)
+INST_FILES = $(IVYCMI) $(IVYMLI) $(GLIBIVYCMI) $(LIBS) $(XLIBS) $(STATIC)
 # tkIvy.cmi  libtkivy.a  dlltkivy.so tkivy.a
-STUBLIBS = dllivy.so dllglibivy.so
+STUBLIBS = dllivy-ocaml.so dllglibivy-ocaml.so
 
 install : $(LIBS)
 	mkdir -p $(DESTDIR)/`ocamlc -where`/$(OUTDIR)
@@ -82,30 +83,29 @@ install : $(LIBS)
 	mkdir -p $(DESTDIR)/`ocamlc -where`/METAS
 	cp $(METAFILES) $(DESTDIR)/`ocamlc -where`/METAS
 	mkdir -p $(DESTDIR)/`ocamlc -where`
-	$(foreach file,$(LIBS), cd $(DESTDIR)/`ocamlc -where`; ln -s ivy/$(file) $(subst .cm,-ocaml.cm,$(file));)
-	$(foreach file,$(STATIC), cd $(DESTDIR)/`ocamlc -where`; ln -s ivy/$(file) $(subst .a,-ocaml.a,$(file));)
-	$(foreach file,$(IVYCMI) $(IVYMLI) $(GLIBIVYCMI), cd $(DESTDIR)/`ocamlc -where`; ln -s ivy/$(file) $(file);)
+	$(foreach file,$(LIBS) $(XLIBS) $(STATIC) $(IVYCMI) $(IVYMLI) $(GLIBIVYCMI), \
+		cd $(DESTDIR)/`ocamlc -where`; ln -s ivy/$(file) $(file);)
 
 desinstall :
 	cd `ocamlc -where`; rm -f $(INST_FILES); rm -f METAS/$(METAFILES)
 
-ivy.cma : $(IVYCMO) civy.o civyloop.o
-	$(OCAMLMKLIB) -o ivy $^ $(LIBRARYS)  -livy
+ivy-ocaml.cma : $(IVYCMO) civy.o civyloop.o
+	$(OCAMLMKLIB) -o ivy-ocaml $^ $(LIBRARYS)  -livy
 
-ivy.cmxa : $(IVYCMX) civy.o civyloop.o
-	$(OCAMLMKLIB) -o ivy $^ $(LIBRARYS)  -livy
+ivy-ocaml.cmxa : $(IVYCMX) civy.o civyloop.o
+	$(OCAMLMKLIB) -o ivy-ocaml $^ $(LIBRARYS)  -livy
 
-glibivy.cma : $(GLIBIVYCMO) civy.o cglibivy.o
-	$(OCAMLMKLIB) -o glibivy $^ $(LIBRARYS) -lglibivy  `pkg-config --libs glib-2.0` -lpcre
+glibivy-ocaml.cma : $(GLIBIVYCMO) civy.o cglibivy.o
+	$(OCAMLMKLIB) -o glibivy-ocaml $^ $(LIBRARYS) -lglibivy  `pkg-config --libs glib-2.0` -lpcre
 
-glibivy.cmxa : $(GLIBIVYCMX) civy.o cglibivy.o
-	$(OCAMLMKLIB) -o glibivy $^ $(LIBRARYS) -lglibivy `pkg-config --libs glib-2.0` -lpcre
+glibivy-ocaml.cmxa : $(GLIBIVYCMX) civy.o cglibivy.o
+	$(OCAMLMKLIB) -o glibivy-ocaml $^ $(LIBRARYS) -lglibivy `pkg-config --libs glib-2.0` -lpcre
 
-tkivy.cma : $(TKIVYCMO) civy.o ctkivy.o
-	$(OCAMLMKLIB) -o tkivy $^ $(LIBRARYS) -livy -ltclivy
+tkivy-ocaml.cma : $(TKIVYCMO) civy.o ctkivy.o
+	$(OCAMLMKLIB) -o tkivy-ocaml $^ $(LIBRARYS) -livy -ltclivy
 
-tkivy.cmxa : $(TKIVYCMX) civy.o ctkivy.o
-	$(OCAMLMKLIB) -o tkivy $^ $(LIBRARYS) -livy -ltclivy
+tkivy-ocaml.cmxa : $(TKIVYCMX) civy.o ctkivy.o
+	$(OCAMLMKLIB) -o tkivy-ocaml $^ $(LIBRARYS) -livy -ltclivy
 
 
 .SUFFIXES:
