@@ -1,8 +1,7 @@
 ivy-ocaml (1.2) unstable; urgency=low
 
-  * Add META file for ocamlfind support
-  * Move installed files in ivy subdirectory
-  * Remove -ocaml suffix
+  * Add META files for ocamlfind support
+  * Split ivy and glibivy into two subdirectories
   * Symbolic link for backward compatibility
   * Update for ocaml 3.12.1
   * Increase minor version number
