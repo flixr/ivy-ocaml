@@ -1,6 +1,10 @@
-# $Id$
+# Makefile for building and installing the ivy ocaml bindings
 
-DESTDIR = /
+DESTDIR ?=
+
+#ifneq ($(DESTDIR),)
+#OCAMLFINDFLAGS += -destdir $(DESTDIR)
+#endif
 
 DEBUG  = n
 
@@ -27,7 +31,10 @@ ifeq ($(LBITS),64)
   FPIC=-fPIC
 endif
 
-OUTDIR = ivy
+uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+ifeq ($(uname_S),Darwin)
+  LIBRARYS = -L/opt/local/lib
+endif
 
 
 IVY = ivy.ml ivyLoop.ml
@@ -49,48 +56,54 @@ TKIVYCMO= $(TKIVY:.ml=.cmo)
 TKIVYCMI= $(TKIVY:.ml=.cmi)
 TKIVYCMX= $(TKIVY:.ml=.cmx)
 
-UNAME = $(shell uname -s)
 
-ifeq ("$(UNAME)","Darwin")
-  LIBRARYS = -L/opt/local/lib
-endif
+IVYLIBS = ivy-ocaml.cma ivy-ocaml.cmxa
+GLIBIVYLIBS = glibivy-ocaml.cma glibivy-ocaml.cmxa
+TKLIBS = tkivy.cma tkivy.cmxa
 
+IVYSTATIC = libivy-ocaml.a ivy-ocaml.a
+GLIBIVYSTATIC = libglibivy-ocaml.a glibivy-ocaml.a
 LIBS = ivy-ocaml.cma glibivy-ocaml.cma
 XLIBS = ivy-ocaml.cmxa glibivy-ocaml.cmxa
-TKLIBS = tkivy.cma tkivy.cmxa
-STATIC = libivy-ocaml.a libglibivy-ocaml.a ivy-ocaml.a glibivy-ocaml.a
+
 GLIBIVYCMI = glibIvy.cmi
-METAFILES = META.ivy META.glibivy
+
 
 all : $(LIBS) $(XLIBS)
 
 deb :
 	dpkg-buildpackage -rfakeroot
 
-ivy : ivy-ocaml.cma ivy-ocaml.cmxa
-glibivy : glibivy-ocaml.cma glibivy-ocaml.cma
+ivy : $(IVYLIBS)
+glibivy : $(GLIBIVYLIBS)
 tkivy : $(TKLIBS)
 
-INST_FILES = $(IVYCMI) $(IVYMLI) $(GLIBIVYCMI) $(LIBS) $(XLIBS) $(STATIC)
-# tkIvy.cmi  libtkivy.a  dlltkivy.so tkivy.a
-STUBLIBS = dllivy-ocaml.so dllglibivy-ocaml.so
+IVY_ALL_LIBS = ivy-ocaml.cma ivy-ocaml.cmxa libivy-ocaml.a ivy-ocaml.a dllivy-ocaml.so
+GLIBIVY_ALL_LIBS = glibivy-ocaml.cma glibivy-ocaml.cmxa libglibivy-ocaml.a glibivy-ocaml.a dllglibivy-ocaml.so
+
+IVY_INST_FILES = $(IVYCMI) $(IVYMLI) $(IVYCMX) $(IVY_ALL_LIBS)
+GLIBIVY_INST_FILES = glibIvy.mli glibIvy.cmi glibIvy.cmx $(GLIBIVY_ALL_LIBS)
 
 install : $(LIBS)
-	mkdir -p $(DESTDIR)/`ocamlc -where`/$(OUTDIR)
-	cp $(INST_FILES) $(DESTDIR)/`ocamlc -where`/$(OUTDIR)
-	mkdir -p $(DESTDIR)/`ocamlc -where`/stublibs
-	cp $(STUBLIBS) $(DESTDIR)/`ocamlc -where`/stublibs
-	mkdir -p $(DESTDIR)/`ocamlc -where`/METAS
-	cp $(METAFILES) $(DESTDIR)/`ocamlc -where`/METAS
-	mkdir -p $(DESTDIR)/`ocamlc -where`
-	$(foreach file,$(LIBS) $(XLIBS) $(STATIC) $(IVYCMI) $(IVYMLI) $(GLIBIVYCMI), \
+	mv META.ivy META
+	ocamlfind install $(OCAMLFINDFLAGS) ivy META $(IVY_INST_FILES)
+	mv META META.ivy
+	mv META.glibivy META
+	ocamlfind install $(OCAMLFINDFLAGS) glibivy META $(GLIBIVY_INST_FILES)
+	mv META META.glibivy
+# make some symlinks for backwards compatibility
+	$(foreach file,$(IVYLIBS) $(IVYSTATIC) $(IVYCMI) $(IVYMLI), \
 		cd $(DESTDIR)/`ocamlc -where`; ln -s ivy/$(file) $(file);)
+	$(foreach file,$(GLIBIVYLIBS) $(GLIBIVYSTATIC) $(GLIBIVYCMI), \
+		cd $(DESTDIR)/`ocamlc -where`; ln -s glibivy/$(file) $(file);)
 
-desinstall :
-	cd `ocamlc -where`; rm -f $(INST_FILES); rm -f METAS/$(METAFILES)
+uninstall :
+	ocamlfind remove ivy
+	ocamlfind remove glibivy
+#	cd `ocamlc -where`; rm -f $(SYMLINKS)
 
 ivy-ocaml.cma : $(IVYCMO) civy.o civyloop.o
-	$(OCAMLMKLIB) -o ivy-ocaml $^ $(LIBRARYS)  -livy
+	$(OCAMLMKLIB) -o ivy-ocaml $^ $(LIBRARYS) -livy
 
 ivy-ocaml.cmxa : $(IVYCMX) civy.o civyloop.o
 	$(OCAMLMKLIB) -o ivy-ocaml $^ $(LIBRARYS)  -livy
@@ -131,7 +144,12 @@ tkivy-ocaml.cmxa : $(TKIVYCMX) civy.o ctkivy.o
 clean:
 	\rm -fr *.cm* *.o *.a .depend *~ *.out *.opt .depend *.so *-stamp debian/ivy-ocaml debian/files debian/ivy-ocaml.debhelper.log debian/ivy-ocaml.substvars debian/*~
 
+.PHONY: all dev ivy glibivy tkivy install uninstall clean
+
 .depend:
 	$(OCAMLDEP) $(INCLUDES) *.mli *.ml > .depend
 
-include .depend
+ifneq ($(MAKECMDGOALS),clean)
+-include .depend
+endif
+
