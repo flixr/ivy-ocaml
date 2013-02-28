@@ -6,6 +6,14 @@ DESTDIR ?=
 #OCAMLFINDFLAGS += -destdir $(DESTDIR)
 #endif
 
+# Set to "n" to disable backwards compatibility symlink creation
+COMPAT_SYMLINK_CREATE ?= y
+
+# Symlink source path modifier between $(DESTDIR)/`ocamlc -where`
+# and [glib]ivy/PKGFILES
+# For linux, nothing; for darwin "site-lib/" with trailing slash
+COMPAT_SYMLINK_SRCMOD ?=
+
 DEBUG  = n
 
 
@@ -91,11 +99,14 @@ install : $(LIBS)
 	mv META.glibivy META
 	ocamlfind install $(OCAMLFINDFLAGS) glibivy META $(GLIBIVY_INST_FILES)
 	mv META META.glibivy
-# make some symlinks for backwards compatibility
+ifeq ($(COMPAT_SYMLINK_CREATE), y)
+	# make some symlinks for backwards compatibility
+	@echo "Creating symlinks for backwards compatibility..."
 	$(foreach file,$(IVYLIBS) $(IVYSTATIC) $(IVYCMI) $(IVYMLI), \
-		cd $(DESTDIR)/`ocamlc -where`; ln -s ivy/$(file) $(file);)
+		cd $(DESTDIR)/`ocamlc -where`; ln -s $(COMPAT_SYMLINK_SRCMOD)ivy/$(file) $(file);)
 	$(foreach file,$(GLIBIVYLIBS) $(GLIBIVYSTATIC) $(GLIBIVYCMI), \
-		cd $(DESTDIR)/`ocamlc -where`; ln -s glibivy/$(file) $(file);)
+		cd $(DESTDIR)/`ocamlc -where`; ln -s $(COMPAT_SYMLINK_SRCMOD)glibivy/$(file) $(file);)
+endif
 
 uninstall :
 	ocamlfind remove ivy
