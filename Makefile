@@ -14,7 +14,10 @@ COMPAT_SYMLINK_CREATE ?= y
 # For linux, nothing; for darwin "site-lib/" with trailing slash
 COMPAT_SYMLINK_SRCMOD ?=
 
-DEBUG  = n
+# Specify default Macports path on OS X
+OSX_MACPORTS_PREFIX ?= /opt/local
+
+DEBUG ?= n
 
 
 OCAMLC = ocamlc
@@ -41,7 +44,7 @@ endif
 
 uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 ifeq ($(uname_S),Darwin)
-  LIBRARYS = -L/opt/local/lib
+  LIBRARYS = -L$(OSX_MACPORTS_PREFIX)/lib
 endif
 
 
@@ -138,7 +141,7 @@ tkivy-ocaml.cmxa : $(TKIVYCMX) civy.o ctkivy.o
 .ml.cmo :
 	$(OCAMLC) $(OCAMLFLAGS) $(INCLUDES) -c $<
 .c.o :
-	$(CC) -Wall -c $(FPIC) -I /opt/local/include/  $(OCAMLINC) $(GLIBINC) $<
+	$(CC) -Wall -c $(FPIC) -I $(OSX_MACPORTS_PREFIX)/include/  $(OCAMLINC) $(GLIBINC) $<
 .mli.cmi :
 	$(OCAMLMLI) $(OCAMLFLAGS) -c $<
 .ml.cmx :
