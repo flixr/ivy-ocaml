@@ -22,7 +22,7 @@ DEBUG ?= n
 
 OCAMLC = ocamlc
 OCAMLMLI = ocamlc
-OCAMLOPT = ocamlopt -unsafe
+OCAMLOPT = ocamlopt
 OCAMLDEP = ocamldep
 OCAMLMKLIB = ocamlmklib
 
