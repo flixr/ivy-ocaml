@@ -1,3 +1,10 @@
+ivy-ocaml (1.2-1) unstable; urgency=low
+
+  * remove -unsafe option for ocamlopt
+  * remove directory from META files, add description
+
+ -- Felix Ruess <felix.ruess@gmail.com>  Thu, 21 Mar 2013 00:26:33 +0100
+
 ivy-ocaml (1.2) unstable; urgency=low
 
   * Add META files for ocamlfind support
