@@ -37,10 +37,8 @@ CFLAGS+=-Wall
 OCAMLINC=-I `ocamlc -where`
 GLIBINC=`pkg-config --cflags glib-2.0`
 
-LBITS := $(shell getconf LONG_BIT)
-ifeq ($(LBITS),64)
-  FPIC=-fPIC
-endif
+# by default use fPIC on all systems
+FPIC ?= -fPIC
 
 uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 ifeq ($(uname_S),Darwin)
