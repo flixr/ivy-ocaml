@@ -1,4 +1,0 @@
-version="1.2"
-directory="+ivy"
-archive(byte)="ivy-ocaml.cma"
-archive(native)="ivy-ocaml.cmxa"

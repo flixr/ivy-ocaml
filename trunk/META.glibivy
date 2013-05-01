@@ -1,4 +1,0 @@
-version="1.2"
-directory="+ivy"
-archive(byte)="glibivy-ocaml.cma"
-archive(native)="glibivy-ocaml.cmxa"
