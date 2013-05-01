@@ -95,7 +95,7 @@ GLIBIVY_ALL_LIBS = glibivy-ocaml.cma glibivy-ocaml.cmxa libglibivy-ocaml.a glibi
 IVY_INST_FILES = $(IVYMLI) $(IVYCMI) $(IVYCMX) $(IVY_ALL_LIBS)
 GLIBIVY_INST_FILES = $(GLIBIVYMLI) $(GLIBIVYCMI) $(GLIBIVYCMX) $(GLIBIVY_ALL_LIBS)
 
-install : $(LIBS)
+install : $(IVY_INST_FILES) $(GLIBIVY_INST_FILES)
 	mv META.ivy META && ocamlfind install $(OCAMLFINDFLAGS) ivy META $(IVY_INST_FILES) && mv META META.ivy || (mv META META.ivy && exit 1)
 	mv META.glibivy META && ocamlfind install $(OCAMLFINDFLAGS) glibivy META $(GLIBIVY_INST_FILES) && mv META META.glibivy || (mv META META.glibivy && exit 1)
 ifeq ($(COMPAT_SYMLINK_CREATE), y)
