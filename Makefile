@@ -59,12 +59,14 @@ GLIBIVY = ivy.ml glibIvy.ml
 
 GLIBIVYCMO= $(GLIBIVY:.ml=.cmo)
 GLIBIVYCMI= $(GLIBIVY:.ml=.cmi)
+GLIBIVYMLI= $(GLIBIVY:.ml=.mli)
 GLIBIVYCMX= $(GLIBIVY:.ml=.cmx)
 
 TKIVY = ivy.ml tkIvy.ml
 
 TKIVYCMO= $(TKIVY:.ml=.cmo)
 TKIVYCMI= $(TKIVY:.ml=.cmi)
+TKIVYMLI= $(TKIVY:.ml=.mli)
 TKIVYCMX= $(TKIVY:.ml=.cmx)
 
 
@@ -76,8 +78,6 @@ IVYSTATIC = libivy-ocaml.a ivy-ocaml.a
 GLIBIVYSTATIC = libglibivy-ocaml.a glibivy-ocaml.a
 LIBS = ivy-ocaml.cma glibivy-ocaml.cma
 XLIBS = ivy-ocaml.cmxa glibivy-ocaml.cmxa
-
-GLIBIVYCMI = glibIvy.cmi
 
 
 all : $(LIBS) $(XLIBS)
@@ -92,8 +92,8 @@ tkivy : $(TKLIBS)
 IVY_ALL_LIBS = ivy-ocaml.cma ivy-ocaml.cmxa libivy-ocaml.a ivy-ocaml.a dllivy-ocaml.so
 GLIBIVY_ALL_LIBS = glibivy-ocaml.cma glibivy-ocaml.cmxa libglibivy-ocaml.a glibivy-ocaml.a dllglibivy-ocaml.so
 
-IVY_INST_FILES = $(IVYCMI) $(IVYMLI) $(IVYCMX) $(IVY_ALL_LIBS)
-GLIBIVY_INST_FILES = glibIvy.mli glibIvy.cmi glibIvy.cmx $(GLIBIVY_ALL_LIBS)
+IVY_INST_FILES = $(IVYMLI) $(IVYCMI) $(IVYCMX) $(IVY_ALL_LIBS)
+GLIBIVY_INST_FILES = $(GLIBIVYMLI) $(GLIBIVYCMI) $(GLIBIVYCMX) $(GLIBIVY_ALL_LIBS)
 
 install : $(LIBS)
 	mv META.ivy META && ocamlfind install $(OCAMLFINDFLAGS) ivy META $(IVY_INST_FILES) && mv META META.ivy || (mv META META.ivy && exit 1)
@@ -102,9 +102,9 @@ ifeq ($(COMPAT_SYMLINK_CREATE), y)
 	# make some symlinks for backwards compatibility
 	@echo "Creating symlinks for backwards compatibility..."
 	$(foreach file,$(IVYLIBS) $(IVYSTATIC) $(IVYCMI) $(IVYMLI), \
-		cd $(DESTDIR)/`ocamlc -where`; ln -s $(COMPAT_SYMLINK_SRCMOD)ivy/$(file) $(file);)
-	$(foreach file,$(GLIBIVYLIBS) $(GLIBIVYSTATIC) $(GLIBIVYCMI), \
-		cd $(DESTDIR)/`ocamlc -where`; ln -s $(COMPAT_SYMLINK_SRCMOD)glibivy/$(file) $(file);)
+		cd $(DESTDIR)/`ocamlc -where`; ln -fs $(COMPAT_SYMLINK_SRCMOD)ivy/$(file) $(file);)
+	$(foreach file,$(GLIBIVYLIBS) $(GLIBIVYSTATIC) glibIvy.cmi, \
+		cd $(DESTDIR)/`ocamlc -where`; ln -fs $(COMPAT_SYMLINK_SRCMOD)glibivy/$(file) $(file);)
 endif
 
 uninstall :
