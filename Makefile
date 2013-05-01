@@ -96,12 +96,8 @@ IVY_INST_FILES = $(IVYCMI) $(IVYMLI) $(IVYCMX) $(IVY_ALL_LIBS)
 GLIBIVY_INST_FILES = glibIvy.mli glibIvy.cmi glibIvy.cmx $(GLIBIVY_ALL_LIBS)
 
 install : $(LIBS)
-	mv META.ivy META
-	ocamlfind install $(OCAMLFINDFLAGS) ivy META $(IVY_INST_FILES)
-	mv META META.ivy
-	mv META.glibivy META
-	ocamlfind install $(OCAMLFINDFLAGS) glibivy META $(GLIBIVY_INST_FILES)
-	mv META META.glibivy
+	mv META.ivy META && ocamlfind install $(OCAMLFINDFLAGS) ivy META $(IVY_INST_FILES) && mv META META.ivy || (mv META META.ivy && exit 1)
+	mv META.glibivy META && ocamlfind install $(OCAMLFINDFLAGS) glibivy META $(GLIBIVY_INST_FILES) && mv META META.glibivy || (mv META META.glibivy && exit 1)
 ifeq ($(COMPAT_SYMLINK_CREATE), y)
 	# make some symlinks for backwards compatibility
 	@echo "Creating symlinks for backwards compatibility..."
