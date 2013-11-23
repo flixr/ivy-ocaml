@@ -1,4 +1,4 @@
-OCaml (caml.org) bindings for the Ivy library (www.tls.cena.fr/products/ivy).
+OCaml (caml.org) bindings for the Ivy library (http://www.eei.cena.fr/products/ivy/).
 
 Two libraries are provided:
  - ivy-ocaml, running with the Ivy main loop (module IvyLoop)
@@ -12,7 +12,7 @@ Installation:
 ("make ivyivyprobe.out" and "make glibivyprobe.out")
 
 Documentation:
- - The Ivy documentation (www.tls.cena.fr/products/ivy)
+ - The Ivy documentation (http://www.eei.cena.fr/products/ivy/)
  - The .mli files (ivy.mli, ivyLoop.mli and glibIvy.mli)
 
 Maintainer: Gautier Hattenberger (gautier dot hattenberger at enac dot fr)
