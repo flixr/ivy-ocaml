@@ -1,3 +1,11 @@
+ivy-ocaml (1.2-2) unstable; urgency=low
+
+  * fix install with COMPAT_SYMLINK_CREATE=no
+  * use -fPIC for all architectures
+  * fix homepage URL
+
+ -- Felix Ruess <felix.ruess@gmail.com>  Tue, 07 May 2013 22:30:06 +0200
+
 ivy-ocaml (1.2-1) unstable; urgency=low
 
   * remove -unsafe option for ocamlopt
