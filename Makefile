@@ -34,8 +34,28 @@ endif
 
 OCAMLOPTFLAGS=
 CFLAGS+=-Wall
-OCAMLINC=-I `ocamlc -where`
-GLIBINC=`pkg-config --cflags glib-2.0`
+OCAMLINC=-I $(shell ocamlc -where)
+
+GLIB_CFLAGS = $(shell pkg-config --cflags glib-2.0)
+
+IVY_CINC = $(shell pkg-config --cflags-only-I ivy-glib)
+
+IVY_CLIBS = $(shell pkg-config --libs ivy-c)
+ifeq ($(strip $(IVY_CLIBS)),)
+IVY_CLIBS = -livy
+endif
+
+IVYGLIB_CLIBS=$(shell pkg-config --libs ivy-glib)
+ifeq ($(strip $(IVYGLIB_CLIBS)),)
+IVYGLIB_CLIBS = -lglibivy -lglib-2.0
+endif
+
+IVYTCL_CLIBS=$(shell pkg-config --libs ivy-tcl)
+ifeq ($(strip $(IVYTCL_CLIBS)),)
+IVYTCL_CLIBS = -ltclivy
+endif
+
+# at least on Debian this is a symlink to the latest tcl version if tcl-dev is installed
 TKINC=-I/usr/include/tcl
 
 # by default use fPIC on all systems
@@ -44,6 +64,7 @@ FPIC ?= -fPIC
 uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 ifeq ($(uname_S),Darwin)
   LIBRARYS = -L$(OSX_MACPORTS_PREFIX)/lib
+  IVY_CINC += -I$(OSX_MACPORTS_PREFIX)/include
 endif
 
 
@@ -112,22 +133,22 @@ uninstall :
 #	cd `ocamlc -where`; rm -f $(SYMLINKS)
 
 ivy-ocaml.cma : $(IVYCMO) civy.o civyloop.o
-	$(OCAMLMKLIB) -o ivy-ocaml $^ $(LIBRARYS) -livy
+	$(OCAMLMKLIB) -o ivy-ocaml $^ $(LIBRARYS) $(IVY_CLIBS)
 
 ivy-ocaml.cmxa : $(IVYCMX) civy.o civyloop.o
-	$(OCAMLMKLIB) -o ivy-ocaml $^ $(LIBRARYS)  -livy
+	$(OCAMLMKLIB) -o ivy-ocaml $^ $(LIBRARYS) $(IVY_CLIBS)
 
 glibivy-ocaml.cma : $(GLIBIVYCMO) civy.o cglibivy.o
-	$(OCAMLMKLIB) -o glibivy-ocaml $^ $(LIBRARYS) -lglibivy  `pkg-config --libs glib-2.0` -lpcre
+	$(OCAMLMKLIB) -o glibivy-ocaml $^ $(LIBRARYS) $(IVYGLIB_CLIBS) -lpcre
 
 glibivy-ocaml.cmxa : $(GLIBIVYCMX) civy.o cglibivy.o
-	$(OCAMLMKLIB) -o glibivy-ocaml $^ $(LIBRARYS) -lglibivy `pkg-config --libs glib-2.0` -lpcre
+	$(OCAMLMKLIB) -o glibivy-ocaml $^ $(LIBRARYS) $(IVYGLIB_CLIBS) -lpcre
 
 tkivy-ocaml.cma : $(TKIVYCMO) civy.o ctkivy.o
-	$(OCAMLMKLIB) -o tkivy-ocaml $^ $(LIBRARYS) -ltclivy
+	$(OCAMLMKLIB) -o tkivy-ocaml $^ $(LIBRARYS) $(IVYTCL_CLIBS)
 
 tkivy-ocaml.cmxa : $(TKIVYCMX) civy.o ctkivy.o
-	$(OCAMLMKLIB) -o tkivy-ocaml $^ $(LIBRARYS) -ltclivy
+	$(OCAMLMKLIB) -o tkivy-ocaml $^ $(LIBRARYS) $(IVYTCL_CLIBS)
 
 
 .SUFFIXES:
@@ -136,7 +157,7 @@ tkivy-ocaml.cmxa : $(TKIVYCMX) civy.o ctkivy.o
 .ml.cmo :
 	$(OCAMLC) $(OCAMLFLAGS) $(INCLUDES) -c $<
 .c.o :
-	$(CC) -Wall -c $(FPIC) -I $(OSX_MACPORTS_PREFIX)/include/  $(OCAMLINC) $(GLIBINC) $(TKINC) $<
+	$(CC) -Wall -c $(FPIC) $(OCAMLINC) $(IVY_CINC) $(TKINC) $(GLIB_CFLAGS) $<
 .mli.cmi :
 	$(OCAMLMLI) $(OCAMLFLAGS) -c $<
 .ml.cmx :
