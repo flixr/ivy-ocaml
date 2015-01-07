@@ -13,7 +13,7 @@
 
 value ivy_sendMsg(value msg)
 {
-  IvySendMsg(String_val(msg));
+  IvySendMsg("%s", String_val(msg));
   return Val_unit;
 }
 
@@ -60,7 +60,7 @@ void ClosureCallback(IvyClientPtr app, void *closure, int argc, char **argv)
 value ivy_bindMsg(value cb_name, value regexp)
 {
   value * closure = caml_named_value(String_val(cb_name));
-  MsgRcvPtr id = IvyBindMsg(ClosureCallback, (void*)closure, String_val(regexp));
+  MsgRcvPtr id = IvyBindMsg(ClosureCallback, (void*)closure, "%s", String_val(regexp));
   return Val_long(id);
 }
 

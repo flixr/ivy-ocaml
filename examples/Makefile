@@ -1,11 +1,11 @@
 # $Id$
 
-OCAMLC = ocamlc -I .. 
-OCAMLMLI = ocamlc -I .. 
-OCAMLOPT = ocamlopt
-OCAMLDEP=ocamldep
+OCAMLC = ocamlfind ocamlc -I ..
+OCAMLMLI = ocamlfind ocamlc -I ..
+OCAMLOPT = ocamlfind ocamlopt
+OCAMLDEP = ocamlfind ocamldep
 
-all: ivyprobe.out glibivyprobe.out
+all: ivyprobe.out glibivyprobe.out tkivyprobe.out
 
 ivyprobe.out : ivyprobe.cmo ivyivyprobe.cmo
 	$(OCAMLC) -custom -o $@ unix.cma ivy-ocaml.cma $^
@@ -13,9 +13,11 @@ ivyprobe.out : ivyprobe.cmo ivyivyprobe.cmo
 glibivyprobe.out : ivyprobe.cmo glibivyprobe.cmo
 	$(OCAMLC) -custom -o $@ unix.cma glibivy-ocaml.cma $^
 
-#tkivyprobe.out : ivyprobe.cmo tkivyprobe.cmo
-#	$(OCAMLC) -custom -o $@ unix.cma -I +labltk labltk.cma -I . $^
-#tkivyprobe.cmo : OCAMLFLAGS=-I +labltk
+tkivyprobe.out : ivyprobe.cmo tkivyprobe.cmo
+	$(OCAMLC) -custom -o $@ unix.cma -I +labltk labltk.cma tkivy-ocaml.cma $^
+
+tkivyprobe.cmo : tkivyprobe.ml
+	$(OCAMLC) -package unix,labltk -c $<
 
 %.cmo : %.ml
 	$(OCAMLC) -c $<

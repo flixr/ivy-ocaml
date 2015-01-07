@@ -36,6 +36,7 @@ OCAMLOPTFLAGS=
 CFLAGS+=-Wall
 OCAMLINC=-I `ocamlc -where`
 GLIBINC=`pkg-config --cflags glib-2.0`
+TKINC=-I/usr/include/tcl
 
 # by default use fPIC on all systems
 FPIC ?= -fPIC
@@ -70,7 +71,7 @@ TKIVYCMX= $(TKIVY:.ml=.cmx)
 
 IVYLIBS = ivy-ocaml.cma ivy-ocaml.cmxa
 GLIBIVYLIBS = glibivy-ocaml.cma glibivy-ocaml.cmxa
-TKLIBS = tkivy.cma tkivy.cmxa
+TKLIBS = tkivy-ocaml.cma tkivy-ocaml.cmxa
 
 IVYSTATIC = libivy-ocaml.a ivy-ocaml.a
 GLIBIVYSTATIC = libglibivy-ocaml.a glibivy-ocaml.a
@@ -78,7 +79,7 @@ LIBS = ivy-ocaml.cma glibivy-ocaml.cma
 XLIBS = ivy-ocaml.cmxa glibivy-ocaml.cmxa
 
 
-all : $(LIBS) $(XLIBS)
+all : $(LIBS) $(XLIBS) $(TKLIBS)
 
 deb :
 	dpkg-buildpackage -rfakeroot
@@ -123,10 +124,10 @@ glibivy-ocaml.cmxa : $(GLIBIVYCMX) civy.o cglibivy.o
 	$(OCAMLMKLIB) -o glibivy-ocaml $^ $(LIBRARYS) -lglibivy `pkg-config --libs glib-2.0` -lpcre
 
 tkivy-ocaml.cma : $(TKIVYCMO) civy.o ctkivy.o
-	$(OCAMLMKLIB) -o tkivy-ocaml $^ $(LIBRARYS) -livy -ltclivy
+	$(OCAMLMKLIB) -o tkivy-ocaml $^ $(LIBRARYS) -ltclivy
 
 tkivy-ocaml.cmxa : $(TKIVYCMX) civy.o ctkivy.o
-	$(OCAMLMKLIB) -o tkivy-ocaml $^ $(LIBRARYS) -livy -ltclivy
+	$(OCAMLMKLIB) -o tkivy-ocaml $^ $(LIBRARYS) -ltclivy
 
 
 .SUFFIXES:
@@ -135,7 +136,7 @@ tkivy-ocaml.cmxa : $(TKIVYCMX) civy.o ctkivy.o
 .ml.cmo :
 	$(OCAMLC) $(OCAMLFLAGS) $(INCLUDES) -c $<
 .c.o :
-	$(CC) -Wall -c $(FPIC) -I $(OSX_MACPORTS_PREFIX)/include/  $(OCAMLINC) $(GLIBINC) $<
+	$(CC) -Wall -c $(FPIC) -I $(OSX_MACPORTS_PREFIX)/include/  $(OCAMLINC) $(GLIBINC) $(TKINC) $<
 .mli.cmi :
 	$(OCAMLMLI) $(OCAMLFLAGS) -c $<
 .ml.cmx :
