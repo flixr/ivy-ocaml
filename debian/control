@@ -2,7 +2,7 @@ Source: ivy-ocaml
 Section: libs
 Priority: optional
 Maintainer: Gautier Hattenberger <gautier.hattenberger@enac.fr>
-Build-Depends: debhelper (>= 7.0.50~), dh-ocaml (>= 0.9.0), ocaml-nox, ocaml-findlib, libglib2.0-dev, libpcre3-dev, ivy-c-dev (>=3.11), tcl-dev
+Build-Depends: debhelper (>= 7.0.50~), dh-ocaml (>= 0.9.0), ocaml-nox, ocaml-findlib, libglib2.0-dev, libpcre3-dev, ivy-c-dev (>=3.11), tk-dev
 Standards-Version: 3.9.2
 Homepage: http://www.eei.cena.fr/products/ivy/
 Vcs-Svn: https://svn.tls.cena.fr/svn/ivy/ivy-ocaml/trunk
