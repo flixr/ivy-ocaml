@@ -7,7 +7,7 @@ DESTDIR ?=
 #endif
 
 # Set to "n" to disable backwards compatibility symlink creation
-COMPAT_SYMLINK_CREATE ?= y
+COMPAT_SYMLINK_CREATE ?= n
 
 # Symlink source path modifier between $(DESTDIR)/`ocamlc -where`
 # and [glib]ivy/PKGFILES
