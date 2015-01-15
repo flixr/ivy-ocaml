@@ -1,4 +1,4 @@
-version="1.3"
+version="1.3.1"
 description="bindings for the Ivy software bus using Tcl/Tk"
 archive(byte)="tkivy-ocaml.cma"
 archive(native)="tkivy-ocaml.cmxa"
