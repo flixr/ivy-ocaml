@@ -16,6 +16,6 @@ export OCAMLFIND_DESTDIR = $(DEB_OCAML_DESTDIR)
 override_dh_auto_install :
 	mkdir -p $(DEB_OCAML_DESTDIR)
 	mkdir -p $(DEB_OCAML_DESTDIR)/stublibs
-	$(MAKE) DESTDIR=$(DEB_DESTDIR) COMPAT_SYMLINK_CREATE=n install
+	$(MAKE) DESTDIR=$(DEB_DESTDIR) install
 
 .PHONY: override_dh_auto_install

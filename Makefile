@@ -6,7 +6,7 @@ DESTDIR ?=
 #OCAMLFINDFLAGS += -destdir $(DESTDIR)
 #endif
 
-# Set to "n" to disable backwards compatibility symlink creation
+# Set to "y" to enable backwards compatibility symlink creation
 COMPAT_SYMLINK_CREATE ?= n
 
 # Symlink source path modifier between $(DESTDIR)/`ocamlc -where`
