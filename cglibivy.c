@@ -15,8 +15,9 @@
 
 value ivy_GtkmainLoop(value unit)
 {
+  CAMLparam1 (unit);
   g_main_loop_run(g_main_loop_new(NULL, FALSE));
-  return Val_unit;
+  CAMLreturn (Val_unit);
 }
 
 extern void cb_delete_channel(void *delete_read);
@@ -25,6 +26,7 @@ extern void cb_write_channel(Channel ch, IVY_HANDLE fd, void *closure);
 
 value ivy_GtkchannelSetUp(value fd, value closure_name)
 {
+  CAMLparam2 (fd, closure_name);
   Channel c;
   value * closure = caml_named_value(String_val(closure_name));
 
@@ -33,11 +35,12 @@ value ivy_GtkchannelSetUp(value fd, value closure_name)
 #else
   c = IvyChannelAdd((IVY_HANDLE)Int_val(fd), (void*)closure, cb_delete_channel, cb_read_channel, cb_write_channel);
 #endif
-  return Val_int(c);
+  CAMLreturn (Val_int(c));
 }
 
 value ivy_GtkchannelClose(value ch)
 {
+  CAMLparam1 (ch);
   IvyChannelRemove((Channel)Long_val(ch));
-  return Val_unit;
+  CAMLreturn (Val_unit);
 }
